@@ -11,7 +11,7 @@ char draw_triangle_char(char sym, int i, int j, int size);
 
 int main(void)
 {
-    setlocale(LC_TYPE, "RUS");
+    setlocale(LC_CTYPE, "RUS");
 
     int choice;
     char replay;
