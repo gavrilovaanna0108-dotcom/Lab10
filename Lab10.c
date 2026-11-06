@@ -7,11 +7,11 @@ double fb(double x);
 double ln_n(double x, int N);
 double ln_eps(double x, double eps);
 float area_triangle(float a, float b);
-int draw_triangle(char sym, int size);
+char draw_triangle_char(char sym, int i, int j, int size);
 
 int main(void)
 {
-    setlocale(LC_CTYPE, "RUS");
+    setlocale(LC_ALL, "");
 
     int choice;
     char replay;
@@ -51,14 +51,37 @@ int main(void)
         printf("Введите x (x > 0): ");
         if (scanf("%lf", &x_val) == 1 && x_val > 0)
         {
-            printf("Введите число членов ряда N: ");
+            printf("Введите число членов ряда N (N >= 1): ");
             scanf("%d", &N);
-            printf("Введите точность eps: ");
+            printf("Введите точность eps (eps > 0): ");
             scanf("%lf", &eps);
 
-            printf("Стандартный ln(x): %lf\n", log(x_val));
-            printf("Через число членов ряда N: %lf\n", ln_n(x_val, N));
-            printf("С заданной точностью eps: %lf\n", ln_eps(x_val, eps));
+            if (N < 1 || eps <= 0.0)
+            {
+                printf("Ошибка: N должно быть >= 1, а точность eps > 0.\n");
+            }
+            else
+            {
+                double standard_ln = log(x_val);
+                double calc_ln_n = ln_n(x_val, N);
+                double calc_ln_eps = ln_eps(x_val, eps);
+
+                double diff_n = fabs(standard_ln - calc_ln_n);
+                double diff_eps = fabs(standard_ln - calc_ln_eps);
+
+                printf("\nРезультаты вычислений:\n");
+                printf("Стандартный ln(x): %lf\n", standard_ln);
+                printf("Через число членов ряда N: %lf\n", calc_ln_n);
+                printf("С заданной точностью eps: %lf\n", calc_ln_eps);
+
+                printf("\nТаблица отклонений:\n");
+                printf("-----------------------------------------\n");
+                printf("| Метод расчета    | Отклонение         |\n");
+                printf("-----------------------------------------\n");
+                printf("| По числу членов  | %18.10f |\n", diff_n);
+                printf("| По точности eps  | %18.10f |\n", diff_eps);
+                printf("-----------------------------------------\n\n");
+            }
         }
         printf("Продолжить? (Да - y, нет - n): ");
         scanf(" %c", &replay);
@@ -74,7 +97,14 @@ int main(void)
         printf("Введите длину катета: ");
         if (scanf("%f", &katet) == 1)
         {
-            printf("Площадь: %f\n", area_triangle(katet, katet));
+            if (katet <= 0.0f)
+            {
+                printf("Ошибка: длина катета должна быть больше 0.\n");
+            }
+            else
+            {
+                printf("Площадь: %f\n", area_triangle(katet, katet));
+            }
         }
     }
     else if (choice == 2)
@@ -90,7 +120,14 @@ int main(void)
         printf("Введите размер: ");
         if (scanf("%d", &size) == 1 && size >= 2)
         {
-            draw_triangle(sym, size);
+            for (int i = 1; i <= size; i++)
+            {
+                for (int j = 1; j <= i; j++)
+                {
+                    putchar(draw_triangle_char(sym, i, j, size));
+                }
+                putchar('\n');
+            }
         }
     }
 
@@ -149,22 +186,11 @@ float area_triangle(float a, float b)
     return 0.5f * a * b;
 }
 
-int draw_triangle(char sym, int size)
+char draw_triangle_char(char sym, int i, int j, int size)
 {
-    for (int i = 1; i <= size; i++)
+    if (i == size || j == 1 || j == i)
     {
-        for (int j = 1; j <= i; j++)
-        {
-            if (i == size || j == 1 || j == i)
-            {
-                printf("%c", sym);
-            }
-            else
-            {
-                printf(" ");
-            }
-        }
-        printf("\n");
+        return sym;
     }
-    return 0;
+    return ' ';
 }
